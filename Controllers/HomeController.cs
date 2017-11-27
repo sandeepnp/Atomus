@@ -3,17 +3,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using Atomus.Models;
 using Atomus.Repositories;
 
 namespace Atomus.Controllers
 {
     public class HomeController : Controller
     {
+        private IEmployeeRepository _employeeRepository;
+
+        public HomeController(IEmployeeRepository employeeRepository)
+        {
+            _employeeRepository = employeeRepository;
+        }
+
         public ActionResult Index()
         {
             return View();
         }
-
        
         public ActionResult UploadFile()
         {
@@ -29,10 +36,8 @@ namespace Atomus.Controllers
 
                 if (uploadedFile != null && uploadedFile.ContentLength > 0)
                 {
-                    var employeeRepository = new EmployeeRepository();
-
                     // Process the uploaded file
-                    if (employeeRepository.UploadEmployees(uploadedFile))
+                    if (_employeeRepository.UploadEmployees(uploadedFile))
                     {
                         // handle success
                        return Json(new { success = true });
@@ -51,11 +56,8 @@ namespace Atomus.Controllers
         [HttpGet]
         public JsonResult DisplayResults()
         {
-            var employeeRepository = new EmployeeRepository();
-            var employees = (employeeRepository.GetEmployees()).ToList();
+            IEnumerable<Employee> employees = _employeeRepository.GetEmployees();
             return Json(employees, JsonRequestBehavior.AllowGet);
         }
-
-
     }
 }

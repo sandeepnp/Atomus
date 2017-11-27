@@ -12,8 +12,8 @@ namespace Atomus.Repositories
     {
         bool UploadEmployees(HttpPostedFileBase file);
 
-       // bool AddEmployee(Employee employee);
+        bool AddEmployee(Employee employee);
 
-        //IEnumerable<Employee> GetEmployees();
+        IEnumerable<Employee> GetEmployees();
     }
 }
