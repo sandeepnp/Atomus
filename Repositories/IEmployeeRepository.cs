@@ -4,16 +4,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
-using AtomusFileUpload.Models;
+using Atomus.Models;
 
-namespace AtomusFileUpload.Repositories
+namespace Atomus.Repositories
 {
     public interface IEmployeeRepository
     {
-       bool UploadEmployees(HttpPostedFileBase file);
+        bool UploadEmployees(HttpPostedFileBase file);
 
-       bool AddEmployee(Employee employee);
+       // bool AddEmployee(Employee employee);
 
-       IEnumerable<Employee> GetEmployees();
+        //IEnumerable<Employee> GetEmployees();
     }
 }

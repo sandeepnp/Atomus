@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.IO;
+using System.Linq;
 using System.Web;
 using System.Web.Configuration;
-using AtomusFileUpload.Models;
+using Atomus.Models;
 
-namespace AtomusFileUpload.Repositories
+namespace Atomus.Repositories
 {
-    public class EmployeeRepository: IEmployeeRepository
+    public class EmployeeRepository : IEmployeeRepository
     {
         private readonly string _connectionString;
 
@@ -25,21 +26,24 @@ namespace AtomusFileUpload.Repositories
                 // Read employees from file
                 var employees = ReadEmployeesFromFile(uploadedFile);
 
-                if (employees != null)
+                if (employees != null )
                 {
-                    // Write employees to DB
-                    foreach (var employee in employees)
+                    if (employees.Count() > 0)
                     {
-                        AddEmployee(employee);
+                        // Write employees to DB
+                        foreach (var employee in employees)
+                        {
+                            AddEmployee(employee);
+                        }
+                        return true;
                     }
                 }
-
-                return true;
+                return false;
             }
             catch (Exception ex)
             {
                 // Log exception
-                
+
                 return false;
             }
         }
@@ -134,7 +138,7 @@ namespace AtomusFileUpload.Repositories
                 // Read lines of employee data from the uploaded csv file
                 while ((employeeLine = streamReader.ReadLine()) != null)
                 {
-                    string[] values = employeeLine.Split(new char[] {','});
+                    string[] values = employeeLine.Split(new char[] { ',' });
 
                     // Assumption: The order of fields is fixed.
                     var employee = new Employee
@@ -160,7 +164,7 @@ namespace AtomusFileUpload.Repositories
 
             return employees;
         }
-        
+
         private void Create(Employee employee)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
