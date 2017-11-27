@@ -1,0 +1,90 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+
+<div ng-app="displayEmployeesApp" ng-controller="displayEmployeesController">
+    <br />
+    <div class="row">
+        <div class="alert alert-warning" ng-show="displayStatus">
+            {{statusMessage}}
+        </div>
+    </div>
+    <div class="container" ng-show="!displayStatus">
+        <div class="row">
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>Firstname</th>
+                    <th>Lastname</th>
+                    <th>Company</th>
+                    <th>Address</th>
+                    <th>City</th>
+                    <th>County</th>
+                    <th>PostCode</th>
+                    <th>Phone1</th>
+                    <th>Phone2</th>
+                    <th>Email</th>
+                    <th>Web</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="employee in employees">
+                    <td>{{ employee.FirstName }}</td>
+                    <td>{{ employee.LastName }}</td>
+                    <td>{{ employee.Company }}</td>
+                    <td>{{ employee.Address }}</td>
+                    <td>{{ employee.City }}</td>
+                    <td>{{ employee.County }}</td>
+                    <td>{{ employee.PostCode }}</td>
+                    <td>{{ employee.Phone1 }}</td>
+                    <td>{{ employee.Phone2 }}</td>
+                    <td>{{ employee.Email }}</td>
+                    <td>{{ employee.Web }}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+
+</div>
+
+
+        <script>
+
+            var app = angular.module('displayEmployeesApp', []);
+
+            app.controller('displayEmployeesController', function ($scope) {
+                $scope.employees = [];
+                $scope.displayStatus = false;
+                $scope.statusMessage = false;
+
+                $.ajax({
+                    url: '/Home/DisplayResults',
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function (data) {
+                        if (data.length !=0)
+                        {
+                            $scope.$apply(function () {
+                                $scope.employees = data;
+                            });
+                        } else {
+                            $scope.$apply(function () {
+                                $scope.statusMessage = 'No records found';
+                                $scope.displayStatus = true;
+                            });
+                        }
+                    },
+                    error: function (error) {
+                        $scope.$apply(function () {
+                            $scope.statusMessage = 'Failed';
+                            $scope.displayStatus = true;
+                        });
+                    }
+                });
+
+            });
+        </script>

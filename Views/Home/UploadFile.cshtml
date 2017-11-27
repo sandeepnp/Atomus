@@ -1,58 +1,97 @@
 ﻿@{
-    ViewBag.Title = "Upload CSV";
+    ViewBag.Title = "Home Page";
 }
 
+
 <div ng-app="myApp" ng-controller="myCtrl">
+    <br/>
     <div class="row">
         <div class="col-md-8">
             <br/>
             <div class="col-md-6">
-                <input type="file" id="file" accept=".csv" class="btn btn-primary"/>
+                <input type="file" id="file" accept=".csv" class="btn btn-primary" ng-click="ClearStatusMessage()"/>
             </div>
             <div class="col-md-2">
                 <button ng-click="UploadFile()" class="button button4">Upload</button>
             </div>
         </div>
     </div>
+    <br/>
+    <div class="row">
+        <div class="col-md-8">
+            <div class="alert alert-success" ng-show="displaySuccessStatus">
+                {{statusMessage}}
+            </div>
+            <div class="alert alert-warning" ng-show="displayWarningStatus">
+                {{statusMessage}}
+            </div>
+        </div>
+    </div>
 </div>
-
 
 
 <script>
     
     var app = angular.module('myApp', []);
 
-    app.controller('myCtrl', function ($scope) {
-
+    app.controller('myCtrl',  function ($scope) {
         var validFormats = ['csv'];
-
+        $scope.statusMessage = '';
+        $scope.displaySuccessStatus = false;
+        $scope.displayWarningStatus = false;
         $scope.UploadFile = function () {
-
             // get the file and check extension
             var fileToUpload = document.getElementById('file').files[0];
             var extn = fileToUpload.name.split(".").pop();
 
-            if (extn === validFormats) {
+            if (extn == validFormats) {
                 // make a post call
                 var fd = new FormData();
                 //Take the selected file
-             
                 fd.append("file", fileToUpload);
-
                 $.ajax({
-                    url: '/Home/UploadFile',
+                    url: '/Home/UploadCsvFile',
                     data: fd,
                     type: 'POST',
                     processData: false,
                     contentType: false,
                     success: function (data) {
-                    
+                        if (data.success) {
+                            $scope.$apply(function () {
+                                $scope.statusMessage = 'File has been uploaded successfully';
+                                $scope.displaySuccessStatus = true;
+                                $scope.displayWarningStatus = false;
+                            });
+                        }
+                        else {
+                            $scope.$apply(function () {
+                                $scope.statusMessage = 'Invalid file';
+                                $scope.displaySuccessStatus = false;
+                                $scope.displayWarningStatus = true;
+                            });
+                        }
+                    },
+                    error: function (error) {
+                        $scope.$apply(function () {
+                            $scope.statusMessage = 'Failed file upload';
+                            $scope.displaySuccessStatus = false;
+                            $scope.displayWarningStatus = true;
+                        });
                     }
                 });
-            } else 
-            {
-                alert('Please select a csv file');
+            }
+            else {
+                $scope.statusMessage = 'Please select a valid csv file';
+                $scope.displaySuccessStatus = false;
+                $scope.displayWarningStatus = true;
             }
         }
+
+        $scope.ClearStatusMessage = function () {
+            $scope.statusMessage = '';
+            $scope.displaySuccessStatus = false;
+            $scope.displayWarningStatus = false;
+        }
+        
     });
 </script>
