@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using AtomusFileUpload.Models;
-using AtomusFileUpload.Repositories;
-using AtomusFileUpload.ViewModels;
+using Atomus.Repositories;
 
-namespace AtomusFileUpload.Controllers
+namespace Atomus.Controllers
 {
     public class HomeController : Controller
     {
@@ -17,47 +14,13 @@ namespace AtomusFileUpload.Controllers
             return View();
         }
 
-        public ActionResult About()
-        {
-            ViewBag.Message = "Your application description page.";
-
-            return View();
-        }
-
-        public ActionResult Contact()
-        {
-            ViewBag.Message = "Your contact page.";
-
-            return View();
-        }
-
+       
         public ActionResult UploadFile()
         {
-            return View();
+           return View();
         }
 
-        [HttpPost]
-        public ActionResult UploadFile(FormCollection form)
-        {
-            if (Request.Files.Count > 0)
-            {
-                HttpPostedFileBase file = Request.Files[0];
-
-                if (file != null && file.ContentLength > 0)
-                {
-                    // Parse the csv 
-                }
-            }
-            return View();
-        }
-
-        public ActionResult Upload()
-        {
-            return View();
-        }
-
-        [HttpPost]
-        public ActionResult UploadEmployees()
+        public ActionResult UploadCsvFile()
         {
             if (Request.Files.Count == 1)
             {
@@ -72,20 +35,27 @@ namespace AtomusFileUpload.Controllers
                     if (employeeRepository.UploadEmployees(uploadedFile))
                     {
                         // handle success
-                        return Redirect("~/Views/Home/Success.cshtml");
+                       return Json(new { success = true });
                     }
                 }
             }
-
             // handle failure
-            return Redirect("failure");
+            return Json(new { success = false });
         }
 
         public ActionResult DisplayEmployees()
         {
-            var employeesViewModel = new EmployeesViewModel();
-
-            return View("~/Views/Home/Results.cshtml", employeesViewModel); ;
+            return View();
         }
+
+        [HttpGet]
+        public JsonResult DisplayResults()
+        {
+            var employeeRepository = new EmployeeRepository();
+            var employees = (employeeRepository.GetEmployees()).ToList();
+            return Json(employees, JsonRequestBehavior.AllowGet);
+        }
+
+
     }
 }
