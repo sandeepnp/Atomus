@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-
-namespace AtomusFileUpload.Models
+﻿
+namespace Atomus.Models
 {
     public class Employee
     {
